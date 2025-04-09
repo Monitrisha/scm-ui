@@ -1,7 +1,8 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import EventDetail from '@/components/EventDetail';
 
 export interface Event {
   id: number;
@@ -15,6 +16,8 @@ interface EventsTableProps {
 }
 
 const EventsTable: React.FC<EventsTableProps> = ({ events }) => {
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+
   const getImpactColor = (impact: string) => {
     switch (impact) {
       case 'High':
@@ -41,37 +44,55 @@ const EventsTable: React.FC<EventsTableProps> = ({ events }) => {
     }
   };
 
+  const handleEventClick = (event: Event) => {
+    setSelectedEvent(event);
+  };
+
+  const handleCloseDetail = () => {
+    setSelectedEvent(null);
+  };
+
   return (
-    <div className="w-full overflow-auto">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[50px] text-center">#</TableHead>
-            <TableHead>Trigger Event</TableHead>
-            <TableHead className="w-[150px]">Impact Category</TableHead>
-            <TableHead className="w-[200px]">Event Status</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {events.map((event) => (
-            <TableRow key={event.id} className="cursor-pointer hover:bg-gray-50">
-              <TableCell className="text-center">{event.id}</TableCell>
-              <TableCell>{event.description}</TableCell>
-              <TableCell>
-                <Badge className={`${getImpactColor(event.impactCategory)}`}>
-                  {event.impactCategory}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                <Badge variant="outline" className={`${getStatusColor(event.status)}`}>
-                  {event.status}
-                </Badge>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      <p className="text-sm text-gray-500 mt-2">*List of all events. For details click on the event</p>
+    <div className="w-full">
+      {selectedEvent ? (
+        <EventDetail event={selectedEvent} onClose={handleCloseDetail} />
+      ) : (
+        <div className="overflow-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[50px] text-center">#</TableHead>
+                <TableHead>Trigger Event</TableHead>
+                <TableHead className="w-[150px]">Impact Category</TableHead>
+                <TableHead className="w-[200px]">Event Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {events.map((event) => (
+                <TableRow 
+                  key={event.id} 
+                  className="cursor-pointer hover:bg-gray-50"
+                  onClick={() => handleEventClick(event)}
+                >
+                  <TableCell className="text-center">{event.id}</TableCell>
+                  <TableCell>{event.description}</TableCell>
+                  <TableCell>
+                    <Badge className={`${getImpactColor(event.impactCategory)}`}>
+                      {event.impactCategory}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className={`${getStatusColor(event.status)}`}>
+                      {event.status}
+                    </Badge>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <p className="text-sm text-gray-500 mt-2">*List of all events. Click on an event for details</p>
+        </div>
+      )}
     </div>
   );
 };
