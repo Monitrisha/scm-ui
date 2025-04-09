@@ -3,7 +3,9 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Event } from '@/components/EventsTable';
 import { Badge } from "@/components/ui/badge";
-import { Clock, Calendar, AlertTriangle, MessageSquare, Check } from "lucide-react";
+import { Button } from '@/components/ui/button';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { AlertTriangle, Check, ArrowLeft, ExternalLink } from "lucide-react";
 
 interface EventDetailProps {
   event: Event;
@@ -12,7 +14,7 @@ interface EventDetailProps {
 
 const EventDetail: React.FC<EventDetailProps> = ({ event, onClose }) => {
   // In a real application, we would fetch detailed event data here
-  // For now, we'll simulate with some mock detailed data
+  // For now, we'll simulate with some mock detailed data based on the event ID
   
   const getImpactColor = (impact: string) => {
     switch (impact) {
@@ -40,113 +42,156 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onClose }) => {
     }
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'Resolved':
-        return <Check className="h-4 w-4" />;
-      case 'Awaiting Planner Input':
-        return <AlertTriangle className="h-4 w-4" />;
-      case 'Events Pending':
-        return <Clock className="h-4 w-4" />;
-      default:
-        return <MessageSquare className="h-4 w-4" />;
-    }
+  // Mock detailed data based on event ID
+  const poDetails = {
+    poNumber: "123",
+    originalDueDate: "2025-02-05",
+    newDueDate: "2025-02-20",
+    quantity: "1000 units"
   };
-  
+
+  const impactDetails = [
+    {
+      agent: "Supply Planning Agent (Inventory)",
+      status: "PO for material no 1002, Current inventory of 180 qty, delayed by 15 days.",
+      impact: "High"
+    },
+    {
+      agent: "Supply Planning Agent (Production)",
+      status: "Production planned for 500 units, shortfall of 320 units.",
+      impact: "High"
+    },
+    {
+      agent: "Supply Planning Agent (Customer order)",
+      status: "Customer demand is unmet & Customer priority is High",
+      impact: "High"
+    }
+  ];
+
+  const actionDetails = [
+    {
+      agent: "Procurement Agent",
+      status: "Delay of 15 days.",
+      action: "Expedite the partial delivery of at least 320 units on or before the original due date."
+    }
+  ];
+
+  const triggerDetails = {
+    description: `Supplier email regarding PO #123. 
+Supplier says delay by 15 days or quantity cannot be fulfilled`
+  };
+
   return (
-    <Card className="border-2 border-orange-200 shadow-lg">
-      <CardHeader className="bg-orange-50/50">
-        <div className="flex justify-between items-center">
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <Button 
+          variant="outline" 
+          onClick={onClose}
+          className="flex items-center gap-1"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Events
+        </Button>
+      </div>
+
+      {/* Trigger Event Section */}
+      <Card className="border-2 border-green-200">
+        <CardHeader className="bg-green-50/50 pb-3">
+          <CardTitle className="text-lg font-medium">Trigger Event:</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-gray-800 mb-4">{triggerDetails.description}</p>
+          
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[50px] text-center">#</TableHead>
+                <TableHead>PO No.</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Impact</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow>
+                <TableCell className="text-center">1</TableCell>
+                <TableCell>{poDetails.poNumber}</TableCell>
+                <TableCell>Original due date was {poDetails.originalDueDate}, but we have received a new due date of {poDetails.newDueDate}.</TableCell>
+                <TableCell>Order qty {poDetails.quantity}</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      {/* Impact Category Section */}
+      <Card className="border-2 border-green-200">
+        <CardHeader className="bg-green-50/50 pb-3 flex flex-row justify-between items-center">
           <CardTitle className="text-lg font-medium">
-            Event #{event.id} Details
+            Impact Category: Based on analysis – it is {event.impactCategory} category impact
           </CardTitle>
-          <button 
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
-          >
-            ×
-          </button>
-        </div>
-      </CardHeader>
-      <CardContent className="pt-6">
-        <div className="space-y-6">
-          <div>
-            <h3 className="font-medium mb-2">Description</h3>
-            <p className="text-gray-700">{event.description}</p>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <h3 className="font-medium mb-2">Impact Category</h3>
-              <Badge className={`${getImpactColor(event.impactCategory)}`}>
-                {event.impactCategory}
-              </Badge>
-            </div>
-            
-            <div>
-              <h3 className="font-medium mb-2">Status</h3>
-              <Badge variant="outline" className={`${getStatusColor(event.status)} flex items-center gap-1`}>
-                {getStatusIcon(event.status)}
-                {event.status}
-              </Badge>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <h3 className="font-medium mb-2">Created Date</h3>
-              <div className="flex items-center gap-2 text-gray-700">
-                <Calendar className="h-4 w-4" />
-                <span>{new Date().toLocaleDateString()}</span>
-              </div>
-            </div>
-            
-            <div>
-              <h3 className="font-medium mb-2">Last Updated</h3>
-              <div className="flex items-center gap-2 text-gray-700">
-                <Clock className="h-4 w-4" />
-                <span>{new Date().toLocaleTimeString()}</span>
-              </div>
-            </div>
-          </div>
-          
-          <div>
-            <h3 className="font-medium mb-2">Recommended Actions</h3>
-            <ul className="list-disc pl-5 space-y-1 text-gray-700">
-              {event.status === 'Awaiting Planner Input' && (
-                <>
-                  <li>Review impact assessment</li>
-                  <li>Provide approval for agent to proceed</li>
-                </>
-              )}
-              {event.status === 'Events Pending' && (
-                <>
-                  <li>Monitor status changes</li>
-                  <li>Verify data accuracy</li>
-                </>
-              )}
-              {event.status === 'Resolved' && (
-                <>
-                  <li>Review resolution steps</li>
-                  <li>Document lessons learned</li>
-                </>
-              )}
-            </ul>
-          </div>
-          
-          <div>
-            <h3 className="font-medium mb-2">Real-time Updates</h3>
-            <div className="bg-gray-50 p-3 rounded border text-sm">
-              <p className="text-gray-600">
-                {event.status === 'Resolved' 
-                  ? 'All actions related to this event have been completed.' 
-                  : 'Agent is actively monitoring this event for changes.'}
-              </p>
-            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+          <Button variant="default" className="bg-blue-700 hover:bg-blue-800" size="sm">
+            <ExternalLink className="h-4 w-4 mr-1" />
+            View All Details
+          </Button>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Agent</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Impact</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {impactDetails.map((detail, index) => (
+                <TableRow key={index}>
+                  <TableCell>{detail.agent}</TableCell>
+                  <TableCell>{detail.status}</TableCell>
+                  <TableCell>
+                    <Badge className={getImpactColor(detail.impact)}>
+                      {detail.impact}
+                    </Badge>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      {/* Action Taken Section */}
+      <Card className="border-2 border-green-200">
+        <CardHeader className="bg-green-50/50 pb-3 flex flex-row justify-between items-center">
+          <CardTitle className="text-lg font-medium">
+            Action Taken: Email sent to supplier
+          </CardTitle>
+          <Button variant="default" className="bg-blue-700 hover:bg-blue-800" size="sm">
+            Provide Additional Inputs
+          </Button>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Agent</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {actionDetails.map((detail, index) => (
+                <TableRow key={index}>
+                  <TableCell>{detail.agent}</TableCell>
+                  <TableCell>{detail.status}</TableCell>
+                  <TableCell>{detail.action}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 
