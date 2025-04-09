@@ -1,12 +1,11 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Event } from '@/components/EventsTable';
 import { Badge } from "@/components/ui/badge";
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { AlertTriangle, Check, ArrowLeft, ExternalLink, ChartBar } from "lucide-react";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
+import { AlertTriangle, Check, ArrowLeft, ExternalLink } from "lucide-react";
 
 interface EventDetailProps {
   event: Event;
@@ -14,6 +13,9 @@ interface EventDetailProps {
 }
 
 const EventDetail: React.FC<EventDetailProps> = ({ event, onClose }) => {
+  // In a real application, we would fetch detailed event data here
+  // For now, we'll simulate with some mock detailed data based on the event ID
+  
   const getImpactColor = (impact: string) => {
     switch (impact) {
       case 'High':
@@ -40,6 +42,7 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onClose }) => {
     }
   };
 
+  // Mock detailed data based on event ID
   const poDetails = {
     poNumber: "123",
     originalDueDate: "2025-02-05",
@@ -78,24 +81,6 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onClose }) => {
 Supplier says delay by 15 days or quantity cannot be fulfilled`
   };
 
-  const affectedCustomerOrders = [
-    { name: 'Company A', orders: 120 },
-    { name: 'Company B', orders: 90 },
-    { name: 'Company C', orders: 70 },
-    { name: 'Company D', orders: 40 },
-    { name: 'Others', orders: 20 }
-  ];
-
-  const chartConfig = {
-    orders: {
-      label: "Customer Orders",
-      theme: {
-        light: "#2563eb",
-        dark: "#3b82f6",
-      },
-    },
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -109,6 +94,7 @@ Supplier says delay by 15 days or quantity cannot be fulfilled`
         </Button>
       </div>
 
+      {/* Trigger Event Section */}
       <Card className="border-2 border-green-200">
         <CardHeader className="bg-green-50/50 pb-3">
           <CardTitle className="text-lg font-medium">Trigger Event:</CardTitle>
@@ -137,60 +123,7 @@ Supplier says delay by 15 days or quantity cannot be fulfilled`
         </CardContent>
       </Card>
 
-      <Card className="border-2 border-green-200">
-        <CardHeader className="bg-green-50/50 pb-3 flex flex-row justify-between items-center">
-          <CardTitle className="text-lg font-medium flex items-center gap-2">
-            <ChartBar className="h-5 w-5" />
-            Affected Customer Orders Due to Material #1002 (Tyre) Delay
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-4">
-          <div className="h-80 w-full">
-            <ChartContainer config={chartConfig}>
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={affectedCustomerOrders} margin={{ top: 20, right: 30, left: 20, bottom: 50 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis 
-                    dataKey="name" 
-                    angle={-45} 
-                    textAnchor="end" 
-                    tick={{ fontSize: 12 }}
-                    height={70}
-                  />
-                  <YAxis 
-                    label={{ value: 'Number of Orders', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle' } }}
-                  />
-                  <Tooltip 
-                    content={({ active, payload }) => {
-                      if (active && payload && payload.length) {
-                        return (
-                          <div className="rounded-lg border bg-background p-2 shadow-md">
-                            <div className="grid grid-cols-2 gap-2">
-                              <span className="font-medium">{payload[0].name}:</span>
-                              <span className="font-medium">{payload[0].value} orders</span>
-                            </div>
-                          </div>
-                        );
-                      }
-                      return null;
-                    }}
-                  />
-                  <Bar 
-                    dataKey="orders" 
-                    fill="var(--color-orders)" 
-                    name="orders"
-                    radius={[4, 4, 0, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </ChartContainer>
-          </div>
-          <div className="text-sm text-center mt-2 text-muted-foreground">
-            Total affected orders: 340 | Material: #1002 (Tyre)
-          </div>
-        </CardContent>
-      </Card>
-
+      {/* Impact Category Section */}
       <Card className="border-2 border-green-200">
         <CardHeader className="bg-green-50/50 pb-3 flex flex-row justify-between items-center">
           <CardTitle className="text-lg font-medium">
@@ -227,6 +160,7 @@ Supplier says delay by 15 days or quantity cannot be fulfilled`
         </CardContent>
       </Card>
 
+      {/* Action Taken Section */}
       <Card className="border-2 border-green-200">
         <CardHeader className="bg-green-50/50 pb-3 flex flex-row justify-between items-center">
           <CardTitle className="text-lg font-medium">
